@@ -12,4 +12,6 @@ this Version (02) added the following features
 - second antenna connector (u.fl)
 - two types of battery (CR2032 or CR1220)
 - OpenLog SDcard based logger, connected via Serial3
+  all sent positions will be logged, so it could be compared from where no connection to a given gateway could be established.
+- DHT22 Temp/Hum Sensor 
 
