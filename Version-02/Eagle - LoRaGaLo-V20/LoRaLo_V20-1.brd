@@ -154,6 +154,7 @@
 <text x="50.8" y="79.756" size="1.016" layer="47">PPS</text>
 <dimension x1="0" y1="0" x2="69.52" y2="0" x3="34.76" y3="-2.54" textsize="1.016" layer="47"/>
 <dimension x1="69.52" y1="0" x2="69.774" y2="82.54" x3="72.772503125" y3="41.260378125" textsize="1.016" layer="47"/>
+<text x="61.976" y="7.112" size="1.4224" layer="25" rot="R90">LoRa Gateway Locator - Vers.2 by ursm</text>
 </plain>
 <libraries>
 <library name="SparkFun-Connectors">
