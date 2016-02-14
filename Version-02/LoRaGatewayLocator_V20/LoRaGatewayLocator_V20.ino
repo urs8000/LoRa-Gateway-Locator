@@ -23,6 +23,7 @@
  * for SX1276 and RFM95.
  *
  * ----------------------------------------------------------------------------
+ * ----------------------------------------------------------------------------
  * LoRa Gateway Locator by Urs Marti / 2016
  * this node gets it's position from a GPS
  * it runs unattended and sends its data in selectable intervals (1', 5', 10')
@@ -39,35 +40,19 @@
  *  --> It will only compiled if the define "isOpenLog" is enabled
  *  
  *  Tested with: Arduino 1.6.7 & Teensyduino under Win10 
- *  in your final compillation you should disable DEBUG1 so the code will be a little bit smaller
- *  used compiling parameters under Tools:
- *    - Board: Teensy 3.2/3.1
- *    - USB Type: Serial
- *    - Keyboard: German Swiss
- *    - CPU Speed: 48MHz optimized
- *    - Port: depending on your installation
- *    with DEBUG1
- *      Sketch uses 73,480 bytes (28%) of program storage space. Maximum is 262,144 bytes.
- *      Global variables use 6,300 bytes (9%) of dynamic memory, leaving 59,236 bytes for local variables. Maximum is 65,536 bytes.
- *    without DEBUG1
- *      Sketch uses 71,584 bytes (27%) of program storage space. Maximum is 262,144 bytes.
- *      Global variables use 6,300 bytes (9%) of dynamic memory, leaving 59,236 bytes for local variables. Maximum is 65,536 bytes.
+ *  in your final compillation you should disable DEBUG1 so the code will be much smaller
  *  
  *  Hardware:  
  *  - Teensy 3.2
  *  - RFM95W  from Hoperf.nl  (compatible with SX1272)
  *  - u-blox PAM-Q  sponsored by u-blox
- *  - OLED (blue or white) with connectors: GND - Vcc - SCL - SDA  !! solder or cut the jumpers
- *    I2C 128X64 OLED Display from Aliexpress
+ *  - OLED (blue or white) with connectors: GND - VCC - SCL - SDA  !! solder or cut the jumpers
+ *         I2C 128X64 OLED Display from Aliexpress
  *  - Antenna: 868Mhz antenna module aerial 2dbi Omni direction SMA male from Aliexpress
- *  - OpenLog Module from SparkFun (attached at Vcc, needs to be tested at 3.3V (bridge the LDO)
  *  
  *  KNOWN ISSUES to be SOLVED:
- *  - running on delay it waits the selected delay. nice: run immediately
  *  - menu does not go back to a defined status.
  *    reinitialize when leaving a choosen RoD
- *  -  when running directly on delay; that does not work.
- *     it always need a Run on Request
  *  - During "get Fix" it's very busy, so actions on the switches did not respond immediately   
  *  
  *
@@ -78,9 +63,16 @@
 #include <SPI.h>                      //
 #include <Adafruit_GPS.h>             //
 #include <SoftwareSerial.h>           //
-#include <Adafruit_ssd1306syp.h>      // depending on your OLED
+#include <Adafruit_ssd1306syp.h>      //
 #include <MenuSystem.h>               // http://blog.humblecoder.com/arduino-menu-system-library/
                                       // https://github.com/jonblack/arduino-menusystem
+
+									  
+// debugging with serial monitor , comment out in final version
+ #define DEBUG1
+
+// if a OpenLog module is installed uncomment next line
+// #define isOpenLog 
 
 
 // Adafruit GPS or u-blox
@@ -90,17 +82,14 @@ Adafruit_GPS GPS(&Serial1);
 // define OLED
 Adafruit_ssd1306syp display(SDA,SCL);    // für Teensy3.2  ********
 
-#define OpenLog Serial3                  // using HWserial on port 3 (7/8)
+#ifdef isOpenLog
+  #define OpenLog Serial3                  // using HWserial on port 3 (7/8)
+#endif
 
 // Set GPSECHO to 'false' to turn off echoing the GPS data to the Serial console
 // Set to 'true' if you want to debug and listen to the raw GPS sentences
 #define GPSECHO  true
 
-// debugging with serial monitor , comment in final version
- #define DEBUG1
-
-// if a OpenLog module is installed uncomment next line
-#define isOpenLog 
 
 // Define RGB LED pins 
 const int green  = 16;
@@ -115,6 +104,7 @@ boolean noFix       = true;      // no Fix yet
 boolean ManButFire  = false;     // Manual Button Fire when no GPS-Fix available
 boolean doRequest   = false;     // Button Request in Run on Request WITH GPS
 boolean showOnce    = true;      // display menu selection once
+boolean immedAction = true;      // at first selection, send immediate with no delay
 char lat_buf[10];
 char long_buf[10];
 String DateTime;
@@ -123,11 +113,12 @@ int ManFireCntr = 0;
 String outbuf_s  = "";
 
 // how long do we wait between measurements ?
-long delayTime0 =  30000;                // 30 seconds only for debugging
-long delayTime1 =  60000;                // one minute
-long delayTime2 = 300000;                // five minutes
-long delayTime3 = 600000;                // ten minutes
-long delayTime  =  60000;                // default
+long delayTime0    =  30000;          // 30 seconds only for debugging
+long delayTime1    =  60000;          // one minute
+long delayTime2    = 300000;          // five minutes
+long delayTime3    = 600000;          // ten minutes
+long delayTime     =  60000;          // default
+long saveDelayTime = 0;               // holding the desired delay time during immediate action
 
 // definitions for the menu and the navigation with the buttons
 int KeyUp  = A9;                 // pad 23
@@ -181,8 +172,8 @@ lmic_pinmap pins = {
 };
 
 // OpenLog definitions
-int resetOpenLog = 4;                            //This pin resets OpenLog. Connect pin 4 to pin GRN on OpenLog.
-String OpenLogFileName = "";                     // 8.3  will be crated when a GPSfix is ok
+int resetOpenLog           = 4;                  //This pin resets OpenLog. Connect pin 4 to pin GRN on OpenLog.
+String OpenLogFileName     = "";                 // 8.3  will be crated when a GPSfix is ok
 boolean OpenLogFileCreated = false;
 
 
@@ -204,7 +195,7 @@ static const u1_t ARTKEY[16] = { 0x2B, 0x7E, 0x15, 0x16, 0x28, 0xAE, 0xD2, 0xA6,
 
 // LoRaWAN end-device address (DevAddr)
 // See http://thethingsnetwork.org/wiki/AddressSpace
-static const u4_t DEVADDR = 0xXXXXXXXX ;                     // <-- Change this address for every node!
+static const u4_t DEVADDR = 0x5A4801AA ;                        // <-- Change this address for every node!
 
 
 //////////////////////////////////////////////////
@@ -229,40 +220,54 @@ void os_getDevKey (u1_t* buf) {
 //---------------------------------------------------------------------
 // Menu callback function
 void on_menu_set_SDP(MenuItem* pMenuItem)  {
-  Serial.println("--> Show actual Date/Pos");
+  #ifdef DEBUG1
+    Serial.println("--> Show actual Date/Pos");
+  #endif
   MenuSelection = 1;
   MenuLevel = true;
   showDisplay_SDP();
 }
 void on_menu_set_RoR(MenuItem* pMenuItem)  {
-  Serial.println("--> Sel Fix or Cnt");
+  #ifdef DEBUG1
+    Serial.println("--> Sel Fix or Cnt");
+  #endif
   MenuLevel = true;
 }
 void on_menu_set_RoR_up(MenuItem* pMenuItem)  {
-  Serial.println("--> leave RoR submenu");
+  #ifdef DEBUG1
+    Serial.println("--> leave RoR submenu");
+  #endif
   MenuSelection = 0;
   MenuLevel = true;
   displayMenu();
 }
 void on_menu_set_RoR_Fix(MenuItem* pMenuItem)  {
-  Serial.println("--> Run on Request with Fix");
+  #ifdef DEBUG1
+    Serial.println("--> Run on Request with Fix");
+  #endif
   MenuSelection = 2;
   MenuLevel = false;
   showDisplay_RoR_Fix();
 }
 void on_menu_set_RoR_Cnt(MenuItem* pMenuItem)  {
-  Serial.println("--> Run on Request with Counter");
+  #ifdef DEBUG1
+    Serial.println("--> Run on Request with Counter");
+  #endif
   MenuSelection = 2;
   ManButFire = true;
-  MenuLevel = false;
+  MenuLevel  = false;
   showDisplay_RoR_MFB();
 }
 void on_menu_set_RoDel(MenuItem* pMenuItem)  {
-  Serial.println("--> Select Delay");
+  #ifdef DEBUG1
+    Serial.println("--> Select Delay");
+  #endif
   MenuLevel = true;
 }
 void on_menu_set_DelayUp(MenuItem* pMenuItem)  {
-  Serial.println("--> leave RoD submenu");
+  #ifdef DEBUG1
+    Serial.println("--> leave RoD submenu");
+  #endif
   MenuSelection = 0;
   MenuLevel = true;
   displayMenu();
@@ -271,23 +276,32 @@ void on_menu_set_Delay01(MenuItem* pMenuItem)  {
   MenuSelection = 3;
   if ( !HighPowerTx ) {
      delayTime = delayTime1;
-     Serial.println(" Delay: 1 minute");
+     #ifdef DEBUG1
+       Serial.print(" Delay: ");
+	   Serial.println(delayTime);
+     #endif
   } else {
      delayTime = delayTime2;
-     Serial.println(" High Power Tx  set, so Delay: 5 minutes");
+     #ifdef DEBUG1
+       Serial.println(" High Power Tx  set, so Delay: 5 minutes");
+     #endif
   }  
   MenuLevel = false;
   showDisplay_RonDel();
 }
 void on_menu_set_Delay05(MenuItem* pMenuItem)  {
-  Serial.println(" Delay: 5 minutes");
+  #ifdef DEBUG1
+    Serial.println(" Delay: 5 minutes");
+  #endif
   MenuSelection = 3;
   delayTime = delayTime2;
   MenuLevel = false;
   showDisplay_RonDel();
 }
 void on_menu_set_Delay10(MenuItem* pMenuItem)  {
-  Serial.println(" Delay: 10 minutes");
+  #ifdef DEBUG1
+    Serial.println(" Delay: 10 minutes");
+  #endif
   MenuSelection = 3;
   delayTime = delayTime3;
   MenuLevel = false;
@@ -297,6 +311,11 @@ void on_menu_set_Delay10(MenuItem* pMenuItem)  {
 // ===================================================================================================
 void setup() {
 
+// initialize button pins (internal pullup, switch takes it LOW)
+  pinMode(KeyUp,  INPUT_PULLUP);
+  pinMode(KeySel, INPUT_PULLUP);
+  pinMode(KeyDwn, INPUT_PULLUP);
+  
 // setup the LED pins as output
   pinMode(red,   OUTPUT);
   pinMode(green, OUTPUT);
@@ -323,26 +342,22 @@ void setup() {
    display.print(DEVADDR, HEX);
   display.update();
 
+  #ifdef DEBUG1
+    Serial.begin(57600);                         // fast read for GPS echo
+    delay(5000);
+    Serial.println("Starting");
+  #endif
+  
 // GPS initialize
-  // 9600 NMEA is the default baud rate for Adafruit MTK GPS's- some use 4800
+  // 9600 NMEA is the default baud rate for Adafruit MTK GPS's - some use 4800
    GPS.begin(9600);
    delay(100);
   // uncomment this line to turn on RMC (recommended minimum) and GGA (fix data) including altitude
    GPS.sendCommand(PMTK_SET_NMEA_OUTPUT_RMCGGA);
   // Set the update rate
-  GPS.sendCommand(PMTK_SET_NMEA_UPDATE_1HZ);   // 1 Hz update rate
-
-  Serial.begin(57600);                         // fast read for GPS echo
-  delay(5000);
-  Serial.println("Starting");
+   GPS.sendCommand(PMTK_SET_NMEA_UPDATE_1HZ);   // 1 Hz update rate
 
 
-// initialize button pins (input via 10k to ground, switch to Vcc   <-- beradboard version (remove _PULLUP !! )
-// initialize button pins (internal pullup, switch takes it LOW)
-  pinMode(KeyUp,  INPUT_PULLUP);
-  pinMode(KeySel, INPUT_PULLUP);
-  pinMode(KeyDwn, INPUT_PULLUP);
-  
   // Menu setup
   mm.add_item(&mi_SDP, &on_menu_set_SDP);             // show actual date / Position
   mm.add_menu(&mu_RoR);                               // run on request (press Select)
@@ -378,16 +393,27 @@ void setup() {
   // HighPowerTx = true;             // disable 1 minute RoD !!
                                      // make true if DR_SF12 is choosen.
   
+  // restrict to channel 0 * aus einer mail von Thomas  (keep secret!)
     #ifdef DEBUG1
+      LMIC_disableChannel(1);
+      LMIC_disableChannel(2);
+      LMIC_disableChannel(3);
+      LMIC_disableChannel(4);
+      LMIC_disableChannel(5);
+      LMIC_disableChannel(6);
+      LMIC_disableChannel(7);
+      LMIC_disableChannel(8);
+      //display.clear();
       display.setTextSize(1);
       display.setCursor(0,20);
-      display.print("debug mode");
+      display.print("debug mode | CH-0");
       display.setCursor(0,30);
       if ( !HighPowerTx ) 
          display.print("normal Pwr Mode");
       else  
          display.print("HIGH Pwr Mode");
       display.update();
+      Serial.println("---> ONLY channel 0 is active");
     #endif
     #ifdef DEBUG1
       delayTime = delayTime0;                   // 
@@ -396,23 +422,15 @@ void setup() {
       Serial.println();
     #endif 
 
-  //
-  Serial.flush();
-  // blink green/blue to show that initialization finished
-  blink(green);     
-  blink(blue);  
-
-  timer = millis();
-
   #ifdef isOpenLog
-     setupOpenLog();                    //Resets logger and waits for the '<' I'm alive character
+     setupOpenLog();        //Resets logger and waits for the '<' I'm alive character
      display.setCursor(0,48);
      display.print("OpenLog ready");
      display.update();
      #ifdef DEBUG1
        Serial.println("OpenLog ready ...");
        gotoCommandMode();               //Puts OpenLog in command mode
-       readDisk();                      // shows what SDcard is inserted
+       readDisk();
      #endif
    #endif
      
@@ -420,6 +438,14 @@ void setup() {
 //   http://forum.arduino.cc/index.php?topic=27986.msg207074#msg207074
 // digitalWrite(SS,HIGH);      //disable device
 // digitalWrite(10, HIGH);     //physical SS pin high before setting SPCR  
+
+  //
+  Serial.flush();
+  // blink green/blue to show that initialization finished
+  blink(green);     
+  blink(blue);  
+
+  timer = millis();
   
 }
 // =========================== setup finished ========================================================
@@ -437,13 +463,13 @@ void onEvent (ev_t ev) {
           // use this event to keep track of actual transmissions
           #ifdef DEBUG1
             Serial.print("Event EV_TXCOMPLETE, time: ");
+            Serial.println(millis() / 1000);
           #endif
           // StatusStr = "TX completed";
           StatusStr = "           done";
           showStatus();         
           TXcomplete = true;
           blink(green);
-          Serial.println(millis() / 1000);
           if(LMIC.dataLen) { // data received in rx slot after tx
               //debug_buf(LMIC.frame+LMIC.dataBeg, LMIC.dataLen);
               #ifdef DEBUG1
@@ -600,7 +626,7 @@ void Button()  {
       // MENU_ACTION
       if (MenuLevel == false)  ms.back();   // if in sub-menu you've to go up to the menu
         else ms.prev();                     // on menu level go easy one up
-        blink(blue);      // indicate button pressed
+        blink(blue);                        // indicate button pressed
         #ifdef DEBUG1 
           Serial.println("------------> button_UP pressed");  
         #endif
@@ -619,9 +645,10 @@ void Button()  {
       buttonState_Sel = reading_Sel;
       if (buttonState_Sel == LOW) {
       // MENU_ACTION
-         ms.select();       // returns from sub-menu, but "stays" in selected part (not nice)
-         blink(blue);       // indicate button pressed
-         showOnce =true;    // shows menu selection once if on a top one
+         ms.select();                // returns from sub-menu, but "stays" in selected part (not nice)
+         blink(blue);                // indicate button pressed
+         showOnce = true;            // shows menu selection once if on a top one
+         immedAction = true;         // next send should be immediately		 
          #ifdef DEBUG1 
            Serial.println("------------> button_SEL pressed");  
          #endif
@@ -641,7 +668,7 @@ void Button()  {
       if (buttonState_Dwn == LOW) {
       // MENU_ACTION
          ms.next();
-         blink(blue);      // indicate button pressed
+         blink(blue);                     // indicate button pressed
          #ifdef DEBUG1 
            Serial.println("------------> button_DWN pressed");  
          #endif
@@ -890,8 +917,13 @@ void readUntilFix() {
       return;  // we can fail to parse a sentence in which case we should just wait for another
   }
   // OK we have good data, but also a fix?
-      if (GPS.fix) {                                
-        Serial.println("FIXed");
+      if (GPS.fix) {
+        #ifdef DEBUG1
+           Serial.println("FIXed");
+        #endif
+        display.setCursor(0,40);
+        display.print("      FIXed      ");
+        display.update();  
         leave_rUF   = true;
         initFix     = true;
         #ifdef isOpenLog                   // if an OpenLog module is installed
@@ -1006,7 +1038,7 @@ void getPosition()  {
            Serial.print("<");
            Serial.println();
          #endif 
-         }  // if fix
+       }  // if fix
    }  // while
 }     // getPosition
   
@@ -1029,6 +1061,8 @@ void loop() {
      display.print("warte auf GPS-Fix");
      display.update();  
      readUntilFix();
+	 getPosition();
+	 showPosition();
   }
        if ( showOnce ) {
          Serial.print("Menu Selection: ");
@@ -1045,27 +1079,40 @@ void loop() {
     // nothing selected or actual action breaked
        displayMenu();
        break;
+	   
     case 1:
     // show actual position
+       if ( immedAction ) 
+		   delayTime = 100;                    // if the function is called the first time, do it immediately
+	   else
+           delayTime = delayTime1;     	     // set delayTime to level1 = 1 Minute	   
        if (timer > millis())  timer = millis();
-       if ((millis() - timer > delayTime) && (TXcomplete == true)){
+       if (millis() - timer > delayTime)  {                 //  && (TXcomplete == true)   not needed
           timer = millis(); // reset the timer
-          #ifdef DEBUG1
+         #ifdef DEBUG1
             Serial.println();
-            Serial.print("case 1, show actual position each ");
-            Serial.print(delayTime);
-            Serial.print(" msec");
-            Serial.println();
+			if ( immedAction ) {
+			  Serial.print("Immediate run");
+			  Serial.println();
+			}
+			else {
+              Serial.print("case 1, show actual position each ");
+              Serial.print(delayTime);
+              Serial.print(" msec");
+              Serial.println();
+			}
           #endif
+          immedAction = false;
           getPosition();
           showPosition();
        }
        break;
+	   
     case 2:
     // run on request
        getKeypress();
        if (doRequest == true) {
-          if (ManButFire) {
+          if ( ManButFire ) {
             // uint8_t mydata[] = "Counter:     ";
             ManFireCntr++;
             char  rangeTestNumber_b[4];
@@ -1084,44 +1131,43 @@ void loop() {
           }
           else {
            getPosition();
+            #ifdef DEBUG1
+              Serial.print("RoR with Fix");
+              Serial.println();
+            #endif  
           } 
           if ( !ManButFire )  showPosition();
            do_send(&sendjob);  
            // os_runloop_once();
        }  
-       #ifdef DEBUG                  // as supposed, it does never arrive here ...
-         Serial.println("RoR, break arrived");
-       #endif  
        break;
 
     case 3:
     // run with selected delay
+       if ( immedAction ) {
+		   saveDelayTime  = delayTime;
+		   delayTime      = 100;                    // if the function is called the first time, do it immediately
+		   TXcomplete     = true;                   // needed to enter the loop the first time
+	   }
        if (timer > millis())  timer = millis();
        if ((millis() - timer > delayTime) && (TXcomplete == true)){
           timer = millis(); // reset the timer
+          immedAction = false;
+		  delayTime = saveDelayTime;
           #ifdef DEBUG1
             Serial.println();
             Serial.print("case 3, run on selected delay: ");
             Serial.print(delayTime);
             Serial.print(" msec");
             Serial.println();
+			if ( immedAction ) Serial.println("immedAction true");
           #endif
           getPosition();
           showPosition();
           if (noFix == false) do_send(&sendjob);
         }
-/*       
-       #ifdef DEBUG
-         Serial.println("RoDel, os_runloop_once arrived");
-       #endif 
-
-       os_runloop_once();
-              
-       #ifdef DEBUG
-         Serial.println("RoDel, break arrived");
-       #endif 
-*/         
        break;
+	   
     default:
     // do nothing
        break;
