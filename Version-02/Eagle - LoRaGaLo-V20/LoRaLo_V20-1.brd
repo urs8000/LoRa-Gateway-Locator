@@ -3425,7 +3425,15 @@ design rules under a new name.</description>
 <wire x1="27.0891" y1="49.8348" x2="27.174" y2="49.9105" width="0.254" layer="1"/>
 <wire x1="22.6314" y1="38.5191" x2="22.606" y2="38.608" width="0.254" layer="16"/>
 <via x="23.8887" y="46.5201" extent="1-16" drill="0.6096"/>
-<wire x1="23.8887" y1="46.5201" x2="14.348" y2="48.26" width="0" layer="19" extent="1-1"/>
+<wire x1="23.8887" y1="46.5201" x2="19.812" y2="46.482" width="0.254" layer="1"/>
+<via x="19.812" y="46.482" extent="1-16" drill="0.6"/>
+<wire x1="19.812" y1="46.482" x2="19.812" y2="49.022" width="0.254" layer="16"/>
+<via x="19.812" y="49.022" extent="1-16" drill="0.6"/>
+<wire x1="19.812" y1="49.022" x2="18.288" y2="50.546" width="0.254" layer="1"/>
+<wire x1="18.288" y1="50.546" x2="15.24" y2="50.546" width="0.254" layer="1"/>
+<wire x1="15.24" y1="50.546" x2="14.478" y2="49.784" width="0.254" layer="1"/>
+<wire x1="14.478" y1="49.784" x2="14.478" y2="48.39" width="0.254" layer="1"/>
+<wire x1="14.478" y1="48.39" x2="14.348" y2="48.26" width="0.254" layer="1"/>
 </signal>
 <signal name="DOWN">
 <contactref element="TEENSY-3.2" pad="21/A7"/>
