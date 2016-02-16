@@ -1,4 +1,4 @@
-Stückliste exportiert aus C:/Users/urs/Documents/_Development/Eagle_Projects/LoRaLo-2/corrected/LoRaLo_V20-1.sch am 15.02.2016 11:07
+Stückliste exportiert aus C:/Users/urs/Documents/_Development/Eagle_Projects/LoRaLo-3/LoRaLo_V30.sch am 15.02.2016 23:42
 
 Part                 Value           Device            Package         Description                                                                  MF MPN OC_FARNELL OC_NEWARK PROD_ID    VALUE
 ANTENNA-(EDGE-MOUNT) SMA_EDGE        SMA_EDGE          SMA-EDGE        SMA Antenna Connector                                                                                                    
@@ -12,10 +12,11 @@ GPS-U-BLOX-PAM7M     U-BLOX-PAM-7Q   U-BLOX-PAM-7Q     U-BLOX-PAM-7Q
 JPOWER                               M-1X02-SIP-100-40 SIP-100-02-40   MALE HEADER                                                                                                              
 LED1                 RED             LED1206           LED-1206        LEDs                                                                                                                     
 LED2                 white           LED1206           LED-1206        LEDs                                                                                                                     
+OLED_128X64                          OLED_128X64       OLED_128X64                                                                                                                              
 OPENLOG-MODULE                       MA06-1            MA06-1          PIN HEADER                                                                          unknown    unknown                   
-PAD1                                 1,6/0,8           1,6/0,8         THROUGH-HOLE PAD                                                                                                         
-PAD2                                 1,6/0,8           1,6/0,8         THROUGH-HOLE PAD                                                                                                         
-PAD3                                 1,6/0,8           1,6/0,8         THROUGH-HOLE PAD                                                                                                         
+P1                                   1,6/0,8           1,6/0,8         THROUGH-HOLE PAD                                                                                                         
+P2                                   1,6/0,8           1,6/0,8         THROUGH-HOLE PAD                                                                                                         
+P3                                   1,6/0,8           1,6/0,8         THROUGH-HOLE PAD                                                                                                         
 R1                   130             RESISTOR1206      1206            Resistor                                                                                                                 
 R2                   47              RESISTOR1206      1206            Resistor                                                                                                                 
 R3                   47              RESISTOR1206      1206            Resistor                                                                                                                 
@@ -23,12 +24,11 @@ R4                   270             R-EU_M1206        M1206           RESISTOR,
 R5                   4.7k            R-EU_M1206        M1206           RESISTOR, European symbol                                                                                                
 R6                   4.7k            R-EU_M1206        M1206           RESISTOR, European symbol                                                                                                
 R7                   270             R-EU_M1206        M1206           RESISTOR, European symbol                                                                                                
-RGBLED               LED_PIRANHA_5MM LED_PIRANHA_5MM   LED_PIRANHA_5MM High-brightness RGB through-hole LED, similar to that used in the Shiftbrite                                             
+RGB-LED              LED_PIRANHA_5MM LED_PIRANHA_5MM   LED_PIRANHA_5MM High-brightness RGB through-hole LED, similar to that used in the Shiftbrite                                             
 S-DWN                                TAC_SWITCHPTH     TACTILE-PTH     Momentary Switch                                                                                                         
 S-SEL                                TAC_SWITCHPTH     TACTILE-PTH     Momentary Switch                                                                                                         
 S-UP                                 TAC_SWITCHPTH     TACTILE-PTH     Momentary Switch                                                                                                         
 SCHALTER                             PINHD-1X3         1X03            PIN HEADER                                                                                                               
 STEP-UP-5V           POLOLU_STEP-UP  POLOLU_STEP-UP    POLOLU_STEP-UP                                                                                                                           
-TEENSY-3.2           TEENSY_3.1_DIL  TEENSY_3.1_DIL    TEENSY3-DIL     Teensy 3.1 or 3.2 in a DIL Layout.                                                                                       
-U$2                  OLED_128X64     OLED_128X64       OLED_128X64                                                                                                                              
+TEENSY-3.2                           TEENSY_3.1_DIL    TEENSY3-DIL     Teensy 3.1 or 3.2 in a DIL Layout.                                                                                       
 U2                   RFM95WSMD       RFM95WSMD         RFM95W_SMD                                                                                                                               

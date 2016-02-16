@@ -15325,7 +15325,7 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <part name="GND15" library="supply1" deviceset="GND" device=""/>
 <part name="FRAME1" library="frames" deviceset="A3L-LOC" device="" value="Misiek"/>
 <part name="P+1" library="supply1" deviceset="VCC" device=""/>
-<part name="TEENSY-3.2" library="Teensy_3_and_LC_Series_Boards_v1.1" deviceset="TEENSY_3.1_DIL" device=""/>
+<part name="TEENSY-3.2" library="Teensy_3_and_LC_Series_Boards_v1.1" deviceset="TEENSY_3.1_DIL" device="" value=""/>
 <part name="P+2" library="supply1" deviceset="VCC" device=""/>
 <part name="R5" library="rcl" deviceset="R-EU_" device="M1206" value="4.7k"/>
 <part name="R6" library="rcl" deviceset="R-EU_" device="M1206" value="4.7k"/>
@@ -15346,9 +15346,9 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <part name="GND11" library="supply1" deviceset="GND" device=""/>
 <part name="ANTENNA-(U.FL)" library="SparkFun-Connectors" deviceset="U.FL" device="" value="U.FL"/>
 <part name="GND16" library="supply1" deviceset="GND" device=""/>
-<part name="PAD2" library="wirepad" deviceset="1,6/0,8" device=""/>
-<part name="PAD3" library="wirepad" deviceset="1,6/0,8" device=""/>
-<part name="PAD1" library="wirepad" deviceset="1,6/0,8" device=""/>
+<part name="P2" library="wirepad" deviceset="1,6/0,8" device=""/>
+<part name="P3" library="wirepad" deviceset="1,6/0,8" device=""/>
+<part name="P1" library="wirepad" deviceset="1,6/0,8" device=""/>
 <part name="R7" library="rcl" deviceset="R-EU_" device="M1206" value="270"/>
 <part name="LED2" library="SparkFun-LED" deviceset="LED" device="1206" value="white"/>
 <part name="GND17" library="supply1" deviceset="GND" device=""/>
@@ -15358,14 +15358,14 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <part name="GPS-U-BLOX-PAM7M" library="u-blox" deviceset="U-BLOX-PAM-7Q" device=""/>
 <part name="SUPPLY1" library="SparkFun-Aesthetics" deviceset="3.3V" device=""/>
 <part name="GND2" library="supply1" deviceset="GND" device=""/>
-<part name="U$2" library="OLED" deviceset="OLED_128X64" device=""/>
+<part name="OLED_128X64" library="OLED" deviceset="OLED_128X64" device="" value=""/>
 <part name="GND1" library="supply1" deviceset="GND" device=""/>
 <part name="SUPPLY3" library="SparkFun-Aesthetics" deviceset="3.3V" device=""/>
 <part name="SUPPLY7" library="SparkFun-Aesthetics" deviceset="3.3V" device=""/>
 <part name="CR1220" library="battery_mod" deviceset="CH291-1220LF" device="" value=""/>
 <part name="STEP-UP-5V" library="Pololu_Step-Up" deviceset="POLOLU_STEP-UP" device=""/>
 <part name="C1" library="rcl" deviceset="CPOL-EU" device="D" value="100u"/>
-<part name="RGBLED" library="SparkFun-LED_mod" deviceset="LED_PIRANHA_5MM" device=""/>
+<part name="RGB-LED" library="SparkFun-LED_mod" deviceset="LED_PIRANHA_5MM" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -15412,9 +15412,9 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <instance part="GND11" gate="1" x="33.02" y="-15.24"/>
 <instance part="ANTENNA-(U.FL)" gate="G$1" x="246.38" y="63.5" rot="R180"/>
 <instance part="GND16" gate="1" x="254" y="68.58"/>
-<instance part="PAD2" gate="P" x="236.22" y="43.18" rot="R180"/>
-<instance part="PAD3" gate="P" x="228.6" y="40.64" rot="R180"/>
-<instance part="PAD1" gate="P" x="241.3" y="45.72" rot="R180"/>
+<instance part="P2" gate="P" x="236.22" y="43.18" rot="R180"/>
+<instance part="P3" gate="P" x="228.6" y="40.64" rot="R180"/>
+<instance part="P1" gate="P" x="241.3" y="45.72" rot="R180"/>
 <instance part="R7" gate="G$1" x="-10.16" y="58.42" rot="R90"/>
 <instance part="LED2" gate="G$1" x="-10.16" y="73.66"/>
 <instance part="GND17" gate="1" x="-10.16" y="50.8"/>
@@ -15424,14 +15424,14 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <instance part="GPS-U-BLOX-PAM7M" gate="G$1" x="35.56" y="63.5"/>
 <instance part="SUPPLY1" gate="G$1" x="45.72" y="66.04"/>
 <instance part="GND2" gate="1" x="38.1" y="68.58"/>
-<instance part="U$2" gate="G$1" x="147.32" y="124.46"/>
+<instance part="OLED_128X64" gate="G$1" x="147.32" y="124.46"/>
 <instance part="GND1" gate="1" x="132.08" y="99.06"/>
 <instance part="SUPPLY3" gate="G$1" x="132.08" y="109.22"/>
 <instance part="SUPPLY7" gate="G$1" x="121.92" y="0"/>
 <instance part="CR1220" gate="G1" x="-30.48" y="10.16"/>
 <instance part="STEP-UP-5V" gate="G$1" x="35.56" y="96.52"/>
 <instance part="C1" gate="G$1" x="55.88" y="109.22"/>
-<instance part="RGBLED" gate="G$1" x="101.6" y="0"/>
+<instance part="RGB-LED" gate="G$1" x="101.6" y="0"/>
 </instances>
 <busses>
 </busses>
@@ -15542,7 +15542,7 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <pinref part="GND2" gate="1" pin="GND"/>
 </segment>
 <segment>
-<pinref part="U$2" gate="G$1" pin="1"/>
+<pinref part="OLED_128X64" gate="G$1" pin="1"/>
 <wire x1="142.24" y1="101.6" x2="132.08" y2="101.6" width="0.1524" layer="91"/>
 <pinref part="GND1" gate="1" pin="GND"/>
 </segment>
@@ -15664,7 +15664,7 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <wire x1="53.34" y1="27.94" x2="48.26" y2="27.94" width="0.1524" layer="91"/>
 </segment>
 <segment>
-<pinref part="U$2" gate="G$1" pin="4"/>
+<pinref part="OLED_128X64" gate="G$1" pin="4"/>
 <wire x1="142.24" y1="124.46" x2="132.08" y2="124.46" width="0.1524" layer="91"/>
 <label x="132.08" y="124.46" size="1.778" layer="95"/>
 </segment>
@@ -15680,7 +15680,7 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <wire x1="40.64" y1="25.4" x2="40.64" y2="30.48" width="0.1524" layer="91"/>
 </segment>
 <segment>
-<pinref part="U$2" gate="G$1" pin="3"/>
+<pinref part="OLED_128X64" gate="G$1" pin="3"/>
 <wire x1="142.24" y1="116.84" x2="132.08" y2="116.84" width="0.1524" layer="91"/>
 <label x="132.08" y="116.84" size="1.778" layer="95"/>
 </segment>
@@ -15756,14 +15756,14 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <pinref part="SUPPLY1" gate="G$1" pin="3.3V"/>
 </segment>
 <segment>
-<pinref part="U$2" gate="G$1" pin="2"/>
+<pinref part="OLED_128X64" gate="G$1" pin="2"/>
 <wire x1="142.24" y1="109.22" x2="132.08" y2="109.22" width="0.1524" layer="91"/>
 <pinref part="SUPPLY3" gate="G$1" pin="3.3V"/>
 </segment>
 <segment>
 <wire x1="114.3" y1="0" x2="121.92" y2="0" width="0.1524" layer="91"/>
 <pinref part="SUPPLY7" gate="G$1" pin="3.3V"/>
-<pinref part="RGBLED" gate="G$1" pin="+"/>
+<pinref part="RGB-LED" gate="G$1" pin="+"/>
 </segment>
 </net>
 <net name="V_BCKP" class="0">
@@ -15852,21 +15852,21 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <net name="N$6" class="0">
 <segment>
 <pinref part="U2" gate="G$1" pin="DIO4"/>
-<pinref part="PAD2" gate="P" pin="P"/>
+<pinref part="P2" gate="P" pin="P"/>
 <wire x1="233.68" y1="43.18" x2="223.52" y2="43.18" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$7" class="0">
 <segment>
 <pinref part="U2" gate="G$1" pin="DIO5"/>
-<pinref part="PAD3" gate="P" pin="P"/>
+<pinref part="P3" gate="P" pin="P"/>
 <wire x1="226.06" y1="40.64" x2="223.52" y2="40.64" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$2" class="0">
 <segment>
 <pinref part="U2" gate="G$1" pin="DIO3"/>
-<pinref part="PAD1" gate="P" pin="P"/>
+<pinref part="P1" gate="P" pin="P"/>
 <wire x1="238.76" y1="45.72" x2="223.52" y2="45.72" width="0.1524" layer="91"/>
 </segment>
 </net>
@@ -15937,7 +15937,7 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <pinref part="R1" gate="G$1" pin="2"/>
 <wire x1="83.82" y1="7.62" x2="88.9" y2="2.54" width="0.1524" layer="91"/>
 <wire x1="88.9" y1="2.54" x2="91.44" y2="2.54" width="0.1524" layer="91"/>
-<pinref part="RGBLED" gate="G$1" pin="RED"/>
+<pinref part="RGB-LED" gate="G$1" pin="RED"/>
 </segment>
 </net>
 <net name="N$3" class="0">
@@ -15945,14 +15945,14 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <pinref part="R2" gate="G$1" pin="2"/>
 <wire x1="83.82" y1="-7.62" x2="88.9" y2="-2.54" width="0.1524" layer="91"/>
 <wire x1="88.9" y1="-2.54" x2="91.44" y2="-2.54" width="0.1524" layer="91"/>
-<pinref part="RGBLED" gate="G$1" pin="GRN"/>
+<pinref part="RGB-LED" gate="G$1" pin="GRN"/>
 </segment>
 </net>
 <net name="N$9" class="0">
 <segment>
 <pinref part="R3" gate="G$1" pin="2"/>
 <wire x1="83.82" y1="0" x2="91.44" y2="0" width="0.1524" layer="91"/>
-<pinref part="RGBLED" gate="G$1" pin="BLU"/>
+<pinref part="RGB-LED" gate="G$1" pin="BLU"/>
 </segment>
 </net>
 <net name="RXD" class="0">
@@ -15979,7 +15979,7 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <label x="33.02" y="81.28" size="1.6764" layer="95"/>
 </segment>
 </net>
-<net name="N$4" class="1">
+<net name="N$4" class="0">
 <segment>
 <pinref part="STEP-UP-5V" gate="G$1" pin="VIN"/>
 <pinref part="C1" gate="G$1" pin="+"/>
