@@ -393,27 +393,17 @@ void setup() {
   // HighPowerTx = true;             // disable 1 minute RoD !!
                                      // make true if DR_SF12 is choosen.
   
-  // restrict to channel 0 * aus einer mail von Thomas  (keep secret!)
     #ifdef DEBUG1
-      LMIC_disableChannel(1);
-      LMIC_disableChannel(2);
-      LMIC_disableChannel(3);
-      LMIC_disableChannel(4);
-      LMIC_disableChannel(5);
-      LMIC_disableChannel(6);
-      LMIC_disableChannel(7);
-      LMIC_disableChannel(8);
       //display.clear();
       display.setTextSize(1);
       display.setCursor(0,20);
-      display.print("debug mode | CH-0");
+      display.print("debug mode");
       display.setCursor(0,30);
       if ( !HighPowerTx ) 
          display.print("normal Pwr Mode");
       else  
          display.print("HIGH Pwr Mode");
       display.update();
-      Serial.println("---> ONLY channel 0 is active");
     #endif
     #ifdef DEBUG1
       delayTime = delayTime0;                   // 
