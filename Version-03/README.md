@@ -22,6 +22,5 @@ Because the layout is totally different, you have to solder it inbetween the bat
 If you plan to use a 5V power bank you just can bridge Vin and Vout and connect your supply instead of batteries to JPOWER
   
   
-  THIS HAS ONLY BE TESTED ON A BREADBOARD (2016.02.14)
-  ***** ALL REPRODUCTION ON YOUR OWN RISK *****
+Tested on final boards, made by ITEAD Studio
 
